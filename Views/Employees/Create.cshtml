@@ -1,0 +1,188 @@
+﻿@model VI.ViewModels.EmployeeViewModel
+
+@{
+    ViewBag.Title = "Create Epmloyee";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CountryId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.EditorFor(model => model.CountryId, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.DropDownListFor(model => model.CountryId, (SelectList)ViewData["Countries"], "Select Country", new { @Class = "form-control", id = "ddlCountry" })
+                @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StateId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.EditorFor(model => model.StateId, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.DropDownListFor(model => model.StateId, new SelectList(string.Empty, "Value", "Text"), new { @Class = "form-control", id = "ddlState" })
+                @Html.ValidationMessageFor(model => model.StateId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CityId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.EditorFor(model => model.CityId, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.DropDownListFor(model => model.CityId, new SelectList(string.Empty, "Value", "Text"), new { @Class = "form-control", id = "ddlCity" })
+                @Html.ValidationMessageFor(model => model.CityId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Zip, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Zip, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Basic, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Basic, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Basic, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.HRA, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.HRA, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.HRA, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DA, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DA, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DA, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="btnSubmit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $("#ddlCountry").change(function () {
+
+                $("#ddlState").empty();
+                $("#ddlCity").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: "/Api/State/" + $("#ddlCountry").val(),
+                    dataType: 'json',
+                    success: function (states) {
+
+                        $("#ddlState").append('<option value="">Select State</option>');
+                        $.each(states, function (i, state) {
+                            $("#ddlState").append('<option value="' + state.Id + '">' +
+                                state.Name + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            });
+            $("#ddlState").change(function () {
+
+                $("#ddlCity").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: "/Api/City/" + $("#ddlState").val(),
+                    dataType: 'json',
+                    success: function (states) {
+
+                        $("#ddlCity").append('<option value="">Select City</option>');
+                        $.each(states, function (i, state) {
+                            $("#ddlCity").append('<option value="' + state.Id + '">' +
+                                state.Name + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            });
+            $("#btnSubmit").click(function () {
+                var form = $("form");
+                var validator = form.validate();
+                validator.form();
+                if (form.valid()) {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Api/Employee/', // we are calling json method
+                        dataType: 'json',
+                        data: $("form").serialize(),
+                        success: function (res) {
+                            debugger;
+                            document.location("/employees");
+                        },
+                        error: function (ex) {
+                            debugger;
+                            alert(ex);
+                        }
+                    });
+                    return false;
+
+                }
+            });
+        });
+    </script>
+}
